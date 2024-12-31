@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Users</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .permission-list {
+            margin-top: 10px;
+        }
+        .permission-item {
+            display: inline-block;
+            margin-right: 15px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #1557b0;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Management</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="buttons">
+            <a href="{{ url_for('register') }}" class="btn">Create New User</a>
+            <a href="{{ url_for('chat') }}" class="btn">Back to Chat</a>
+        </div>
+
+        <div class="user-list">
+            {% for username, user in users.items() %}
+                <div class="user-item">
+                    <h3>{{ username }} ({{ user.role }})</h3>
+                    <form method="POST" action="{{ url_for('update_permissions') }}">
+                        <input type="hidden" name="username" value="{{ username }}">
+                        <div class="permission-list">
+                            <div class="permission-item">
+                                <input type="checkbox" id="chat_{{ username }}" name="permissions" value="chat"
+                                    {% if 'chat' in user.permissions %}checked{% endif %}>
+                                <label for="chat_{{ username }}">Chat</label>
+                            </div>
+                            <div class="permission-item">
+                                <input type="checkbox" id="create_user_{{ username }}" name="permissions" value="create_user"
+                                    {% if 'create_user' in user.permissions %}checked{% endif %}>
+                                <label for="create_user_{{ username }}">Create Users</label>
+                            </div>
+                            <div class="permission-item">
+                                <input type="checkbox" id="manage_permissions_{{ username }}" name="permissions" value="manage_permissions"
+                                    {% if 'manage_permissions' in user.permissions %}checked{% endif %}>
+                                <label for="manage_permissions_{{ username }}">Manage Permissions</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Update Permissions</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html> 
